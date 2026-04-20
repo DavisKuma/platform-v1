@@ -1,4 +1,4 @@
-const BASE = "/api";
+const BASE = "https://platform-zqev.onrender.com/api";
 
 async function request<T>(path: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
