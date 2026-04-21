@@ -8,11 +8,10 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Upload, FileText, CheckCircle2, Sparkles, ArrowRight,
   ExternalLink, MapPin, Building2, Loader2, AlertCircle,
-  Brain, ChevronDown, ChevronUp,
+  Brain, ChevronDown, ChevronUp, Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -44,9 +43,41 @@ const STEP_LABELS: Record<AnalysisStep, string> = {
   error: "Something went wrong",
 };
 
-const STEP_PROGRESS: Record<AnalysisStep, number> = {
-  idle: 0, uploading: 15, processing: 50, done: 100, error: 0,
-};
+/** Map backend progress strings to approximate bar percentages. */
+function progressToPercent(msg: string): number {
+  if (!msg) return 20;
+  const lower = msg.toLowerCase();
+  if (lower.includes("starting")) return 15;
+  if (lower.includes("scraping") || lower.includes("analysing cv")) return 25;
+  if (lower.includes("extracting cv")) return 30;
+  if (lower.includes("filtering")) return 40;
+  if (lower.includes("scoring")) {
+    // "Scored 30/75 jobs" → parse fraction for smooth progress
+    const m = msg.match(/Scored\s+(\d+)\s*\/\s*(\d+)/i);
+    if (m) {
+      const pct = parseInt(m[1], 10) / parseInt(m[2], 10);
+      return Math.round(50 + pct * 40); // 50-90%
+    }
+    return 50;
+  }
+  if (lower.includes("done")) return 95;
+  return 20;
+}
+
+/** Map percent to active stepper phase (0-3). */
+function percentToPhase(pct: number): number {
+  if (pct >= 90) return 3;
+  if (pct >= 40) return 2;
+  if (pct >= 15) return 1;
+  return 0;
+}
+
+const PHASES = [
+  { icon: Upload, label: "Upload" },
+  { icon: Brain, label: "Analyse" },
+  { icon: Sparkles, label: "Match" },
+  { icon: CheckCircle2, label: "Done" },
+] as const;
 
 function getScoreColor(score: number) {
   if (score >= 80) return { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-400", ring: "ring-emerald-200 dark:ring-emerald-800" };
@@ -73,6 +104,7 @@ export default function CvAnalysis() {
   const [showAllMatches, setShowAllMatches] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [progressMsg, setProgressMsg] = useState<string>("");
+  const [progressPercent, setProgressPercent] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(async (file: File) => {
@@ -89,11 +121,13 @@ export default function CvAnalysis() {
     setErrorMsg(null);
     setMatches([]);
     setProgressMsg("");
+    setProgressPercent(10);
 
     try {
       setStep("processing");
       const result = await api.matchJobs(file, 20, (progress) => {
         setProgressMsg(progress);
+        setProgressPercent(progressToPercent(progress));
       });
 
       const mapped: JobMatch[] = (result.recommendations || []).map((rec: Record<string, any>, i: number) => ({
@@ -188,23 +222,103 @@ export default function CvAnalysis() {
             </motion.div>
           ) : step !== "done" ? (
             <motion.div key="processing" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} className="mb-10">
-              <Card className="border-border">
+              <Card className="border-border overflow-hidden">
+                {/* gradient accent bar */}
+                <div className="h-1 bg-gradient-to-r from-[oklch(0.488_0.243_264.376)] via-[oklch(0.6_0.2_300)] to-[oklch(0.696_0.17_162.48)]" />
                 <CardContent className="p-8 sm:p-12">
-                  <div className="text-center space-y-6">
-                    <div className="w-16 h-16 mx-auto rounded-2xl bg-[oklch(0.488_0.243_264.376/0.08)] flex items-center justify-center">
-                      <Loader2 className="w-8 h-8 text-[oklch(0.488_0.243_264.376)] animate-spin" />
+                  <div className="space-y-8">
+                    {/* ── Stepper ── */}
+                    <div className="flex items-center justify-between max-w-lg mx-auto">
+                      {PHASES.map((phase, i) => {
+                        const active = percentToPhase(progressPercent);
+                        const completed = i < active;
+                        const isCurrent = i === active;
+                        const Icon = phase.icon;
+                        return (
+                          <div key={phase.label} className="flex items-center flex-1 last:flex-none">
+                            {/* circle */}
+                            <div className="flex flex-col items-center gap-1.5 relative">
+                              <motion.div
+                                animate={isCurrent ? { scale: [1, 1.12, 1] } : {}}
+                                transition={isCurrent ? { duration: 1.8, repeat: Infinity, ease: "easeInOut" } : {}}
+                                className={`
+                                  relative w-11 h-11 rounded-full flex items-center justify-center transition-all duration-500
+                                  ${completed
+                                    ? "bg-[oklch(0.696_0.17_162.48)] shadow-lg shadow-[oklch(0.696_0.17_162.48/0.3)]"
+                                    : isCurrent
+                                      ? "bg-[oklch(0.488_0.243_264.376)] shadow-lg shadow-[oklch(0.488_0.243_264.376/0.4)]"
+                                      : "bg-muted"
+                                  }
+                                `}
+                              >
+                                {completed ? (
+                                  <Check className="w-5 h-5 text-white" />
+                                ) : isCurrent ? (
+                                  <Icon className="w-5 h-5 text-white" />
+                                ) : (
+                                  <Icon className="w-5 h-5 text-muted-foreground/50" />
+                                )}
+                                {isCurrent && (
+                                  <motion.div
+                                    className="absolute inset-0 rounded-full border-2 border-[oklch(0.488_0.243_264.376)]"
+                                    animate={{ scale: [1, 1.5], opacity: [0.6, 0] }}
+                                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                                  />
+                                )}
+                              </motion.div>
+                              <span className={`text-[11px] font-medium transition-colors duration-300 ${completed || isCurrent ? "text-foreground" : "text-muted-foreground/50"}`}>
+                                {phase.label}
+                              </span>
+                            </div>
+                            {/* connector line */}
+                            {i < PHASES.length - 1 && (
+                              <div className="flex-1 h-0.5 mx-2 mb-5 rounded-full bg-muted overflow-hidden">
+                                <motion.div
+                                  className="h-full rounded-full bg-gradient-to-r from-[oklch(0.696_0.17_162.48)] to-[oklch(0.488_0.243_264.376)]"
+                                  initial={{ width: "0%" }}
+                                  animate={{ width: completed ? "100%" : isCurrent ? "50%" : "0%" }}
+                                  transition={{ duration: 0.6, ease: "easeOut" }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                    <div>
-                      <h3 className="font-display font-bold text-xl text-foreground mb-2">{progressMsg || STEP_LABELS[step]}</h3>
-                      {fileName && <p className="text-sm text-muted-foreground flex items-center justify-center gap-2"><FileText className="w-4 h-4" /> {fileName}</p>}
+
+                    {/* ── Status text ── */}
+                    <div className="text-center space-y-3">
+                      <AnimatePresence mode="wait">
+                        <motion.p
+                          key={progressMsg}
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.25 }}
+                          className="font-display font-semibold text-lg text-foreground"
+                        >
+                          {progressMsg || STEP_LABELS[step]}
+                        </motion.p>
+                      </AnimatePresence>
+                      {fileName && (
+                        <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                          <FileText className="w-4 h-4" /> {fileName}
+                        </p>
+                      )}
                     </div>
+
+                    {/* ── Gradient progress bar ── */}
                     <div className="max-w-md mx-auto">
-                      <Progress value={STEP_PROGRESS[step]} className="h-2" />
-                      <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                        <span>Upload</span><span>Analyse</span><span>Match</span><span>Done</span>
+                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-gradient-to-r from-[oklch(0.488_0.243_264.376)] via-[oklch(0.6_0.2_300)] to-[oklch(0.696_0.17_162.48)]"
+                          initial={{ width: "0%" }}
+                          animate={{ width: `${progressPercent}%` }}
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        />
                       </div>
+                      <p className="text-center text-xs text-muted-foreground mt-3">This usually takes 20-40 seconds</p>
                     </div>
-                    <p className="text-xs text-muted-foreground">This usually takes 20-40 seconds...</p>
                   </div>
                 </CardContent>
               </Card>
