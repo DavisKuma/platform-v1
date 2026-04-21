@@ -34,19 +34,18 @@ interface JobMatch {
   source: string;
 }
 
-type AnalysisStep = "idle" | "uploading" | "analysing" | "matching" | "done" | "error";
+type AnalysisStep = "idle" | "uploading" | "processing" | "done" | "error";
 
 const STEP_LABELS: Record<AnalysisStep, string> = {
   idle: "Ready to upload",
   uploading: "Uploading your CV...",
-  analysing: "AI is analysing your CV & scraping live jobs...",
-  matching: "Matching you with sponsor-verified employers...",
+  processing: "Processing your CV...",
   done: "Analysis complete!",
   error: "Something went wrong",
 };
 
 const STEP_PROGRESS: Record<AnalysisStep, number> = {
-  idle: 0, uploading: 15, analysing: 45, matching: 75, done: 100, error: 0,
+  idle: 0, uploading: 15, processing: 50, done: 100, error: 0,
 };
 
 function getScoreColor(score: number) {
@@ -73,6 +72,7 @@ export default function CvAnalysis() {
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
   const [showAllMatches, setShowAllMatches] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [progressMsg, setProgressMsg] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(async (file: File) => {
@@ -88,25 +88,24 @@ export default function CvAnalysis() {
     setStep("uploading");
     setErrorMsg(null);
     setMatches([]);
+    setProgressMsg("");
 
     try {
-      const stepTimer1 = setTimeout(() => setStep("analysing"), 1500);
-      const stepTimer2 = setTimeout(() => setStep("matching"), 8000);
-      const result = await api.matchJobs(file);
-      clearTimeout(stepTimer1);
-      clearTimeout(stepTimer2);
+      setStep("processing");
+      const result = await api.matchJobs(file, 20, (progress) => {
+        setProgressMsg(progress);
+      });
 
       const mapped: JobMatch[] = (result.recommendations || []).map((rec: Record<string, any>, i: number) => ({
         id: String(i),
         jobTitle: rec["Job Title"] || "",
         company: rec["Company"] || "",
         location: rec["Location"] || "",
-        salary: rec["Salary Min"] != null && rec["Salary Max"] != null
-          ? `£${(rec["Salary Min"] / 1000).toFixed(0)}k – £${(rec["Salary Max"] / 1000).toFixed(0)}k` : "",
+        salary: rec["Salary"] || "",
         fitScore: rec["Relevance Score"] || 0,
         fitReason: rec["Why"] || "",
-        jobLink: rec["Job Link"] || "",
-        jobDescription: rec["Job Description"] || "",
+        jobLink: rec["URL"] || "",
+        jobDescription: rec["Description"] || "",
         source: rec["Source"] || "",
       }));
 
@@ -196,7 +195,7 @@ export default function CvAnalysis() {
                       <Loader2 className="w-8 h-8 text-[oklch(0.488_0.243_264.376)] animate-spin" />
                     </div>
                     <div>
-                      <h3 className="font-display font-bold text-xl text-foreground mb-2">{STEP_LABELS[step]}</h3>
+                      <h3 className="font-display font-bold text-xl text-foreground mb-2">{progressMsg || STEP_LABELS[step]}</h3>
                       {fileName && <p className="text-sm text-muted-foreground flex items-center justify-center gap-2"><FileText className="w-4 h-4" /> {fileName}</p>}
                     </div>
                     <div className="max-w-md mx-auto">
