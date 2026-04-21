@@ -128,13 +128,11 @@ export default function Home() {
         jobTitle: rec["Job Title"] || "",
         company: rec["Company"] || "",
         location: rec["Location"] || "",
-        salary: rec["Salary Min"] != null && rec["Salary Max"] != null
-          ? `£${(rec["Salary Min"] / 1000).toFixed(0)}k – £${(rec["Salary Max"] / 1000).toFixed(0)}k`
-          : "",
+        salary: rec["Salary"] || "",
         fitScore: rec["Relevance Score"] || 0,
         fitReason: rec["Why"] || "",
-        jobLink: rec["Job Link"] || "",
-        jobDescription: rec["Job Description"] || "",
+        jobLink: rec["URL"] || "",
+        jobDescription: rec["Description"] || "",
         source: rec["Source"] || "",
       }));
 
@@ -511,7 +509,7 @@ export default function Home() {
                                   {match.fitReason}
                                 </p>
 
-                                {match.salary && match.salary !== " - " && (
+                                {match.salary && (
                                   <p className="text-xs text-muted-foreground mt-1.5">
                                     Salary: {match.salary}
                                   </p>
