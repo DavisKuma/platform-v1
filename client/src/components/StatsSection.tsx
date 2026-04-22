@@ -1,44 +1,44 @@
 /**
- * StatsSection — Key platform metrics in a warm, trust-building layout
- * Design: Warm Modernism — indigo bg block, warm stat cards
+ * StatsSection — Key platform statistics for SpotRole AI
+ * Design: Warm Modernism — stat cards with accent icons
  */
 import { motion } from "framer-motion";
-import { Building2, Users, Mail, TrendingUp } from "lucide-react";
+import { Briefcase, Target, Clock, TrendingUp, Mail } from "lucide-react";
 
 export default function StatsSection() {
   const stats = [
     {
-      icon: Building2,
-      value: "121,000+",
-      label: "Verified Sponsors",
-      description: "Companies with active UK visa licences",
+      icon: Briefcase,
+      value: "50K+",
+      label: "Live Jobs Scraped",
+      description: "From Adzuna & Reed daily",
       iconBg: "bg-[oklch(0.488_0.243_264.376/0.1)]",
       iconColor: "text-[oklch(0.488_0.243_264.376)]",
       cornerBg: "bg-[oklch(0.488_0.243_264.376)]",
     },
     {
-      icon: Users,
-      value: "≤100",
-      label: "Max Employees",
-      description: "Small companies that actually respond",
+      icon: Target,
+      value: "92%",
+      label: "Match Accuracy",
+      description: "AI relevance score precision",
       iconBg: "bg-[oklch(0.696_0.17_162.48/0.1)]",
       iconColor: "text-[oklch(0.696_0.17_162.48)]",
       cornerBg: "bg-[oklch(0.696_0.17_162.48)]",
     },
     {
-      icon: Mail,
-      value: "34%",
-      label: "Reply Rate",
-      description: "Average for AI-generated outreach",
+      icon: Clock,
+      value: "< 2 min",
+      label: "Analysis Time",
+      description: "From upload to matched results",
       iconBg: "bg-[oklch(0.828_0.189_84.429/0.1)]",
       iconColor: "text-[oklch(0.828_0.189_84.429)]",
       cornerBg: "bg-[oklch(0.828_0.189_84.429)]",
     },
     {
       icon: TrendingUp,
-      value: "12 days",
-      label: "Avg. Time to Interview",
-      description: "From first email to interview invite",
+      value: "10K+",
+      label: "CVs Matched",
+      description: "Job seekers helped so far",
       iconBg: "bg-[oklch(0.541_0.281_275.847/0.1)]",
       iconColor: "text-[oklch(0.541_0.281_275.847)]",
       cornerBg: "bg-[oklch(0.541_0.281_275.847)]",
@@ -58,18 +58,21 @@ export default function StatsSection() {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="relative bg-card rounded-2xl border border-border p-6 hover:shadow-lg hover:shadow-[oklch(0.488_0.243_264.376/0.05)] transition-all duration-300 group overflow-hidden"
             >
-              {/* Decorative corner */}
-              <div
-                className={`absolute top-0 right-0 w-24 h-24 rounded-bl-[3rem] opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-300 ${stat.cornerBg}`}
-              />
+              {/* Corner accent */}
+              <div className={`absolute top-0 right-0 w-16 h-16 rounded-bl-3xl ${stat.cornerBg} opacity-[0.06] group-hover:opacity-[0.1] transition-opacity duration-300`} />
 
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${stat.iconBg}`}>
+              <div className={`w-11 h-11 rounded-xl ${stat.iconBg} flex items-center justify-center mb-4`}>
                 <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
               </div>
-
-              <p className="font-display font-extrabold text-3xl text-foreground mb-1">{stat.value}</p>
-              <p className="font-display font-semibold text-sm text-foreground mb-1">{stat.label}</p>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
+              <div className="font-display font-black text-3xl text-foreground mb-1">
+                {stat.value}
+              </div>
+              <div className="font-display font-semibold text-sm text-foreground mb-1">
+                {stat.label}
+              </div>
+              <div className="text-xs text-muted-foreground leading-relaxed">
+                {stat.description}
+              </div>
             </motion.div>
           ))}
         </div>

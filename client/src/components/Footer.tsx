@@ -1,99 +1,50 @@
 /**
- * Footer — Professional footer with Top Offer Academy branding
- * Design: Warm Modernism — cream bg, muted links, Sora font
+ * Footer — SpotRole AI footer
+ * Design: Warm Modernism — warm card, indigo accents
  */
-import { Sparkles, ExternalLink } from "lucide-react";
-import { useLocation } from "wouter";
+import { Target } from "lucide-react";
 
 export default function Footer() {
-  const [, navigate] = useLocation();
-
   return (
-    <footer className="border-t border-border bg-card">
-      <div className="container py-12">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+    <footer className="border-t border-border bg-card/50">
+      <div className="container py-12 md:py-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-[oklch(0.488_0.243_264.376)] flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-xl bg-[oklch(0.488_0.243_264.376)] flex items-center justify-center">
+                <Target className="w-4.5 h-4.5 text-white" />
               </div>
               <span className="font-display font-bold text-base text-foreground">
-                Micro<span className="text-[oklch(0.488_0.243_264.376)]">Sponsor</span> AI
+                Spot<span className="text-[oklch(0.488_0.243_264.376)]">Role</span> AI
               </span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mb-4">
-              Helping international students find visa-sponsored jobs at small UK companies that actually respond.
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              Upload your CV and let AI match you with the best job opportunities. Powered by live job data from Adzuna and Reed.
             </p>
-            <a
-              href="https://topofferacademy.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[oklch(0.488_0.243_264.376)] hover:text-[oklch(0.441_0.243_264.376)] transition-colors"
-            >
-              A Top Offer Academy Product <ExternalLink className="w-3.5 h-3.5" />
-            </a>
           </div>
 
-          {/* Links */}
+          {/* Platform */}
           <div>
-            <h4 className="font-display font-semibold text-sm text-foreground mb-4">Product</h4>
+            <h4 className="font-display font-semibold text-sm text-foreground mb-4">Platform</h4>
             <ul className="space-y-2.5">
               <li>
-                <button onClick={() => navigate("/dashboard")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Dashboard
-                </button>
+                <span className="text-sm text-muted-foreground">CV Matching</span>
               </li>
               <li>
-                <button onClick={() => navigate("/matches")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  My Matches
-                </button>
+                <span className="text-sm text-muted-foreground">Job Analysis</span>
               </li>
               <li>
-                <button onClick={() => navigate("/outreach")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Outreach History
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate("/")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Browse Jobs
-                </button>
+                <span className="text-sm text-muted-foreground">Role Recommendations</span>
               </li>
             </ul>
           </div>
 
+          {/* Resources */}
           <div>
             <h4 className="font-display font-semibold text-sm text-foreground mb-4">Resources</h4>
             <ul className="space-y-2.5">
-              {["Visa Sponsor Guide", "Cold Email Tips", "Interview Prep", "Blog"].map((link) => (
-                <li key={link}>
-                  <a
-                    href="https://topofferacademy.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-display font-semibold text-sm text-foreground mb-4">Company</h4>
-            <ul className="space-y-2.5">
-              <li>
-                <a
-                  href="https://topofferacademy.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Top Offer Academy
-                </a>
-              </li>
-              {["Privacy Policy", "Terms of Service", "Contact"].map((link) => (
+              {["CV Writing Tips", "Interview Prep", "Career Guides", "Blog"].map((link) => (
                 <li key={link}>
                   <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     {link}
@@ -107,20 +58,15 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} MicroSponsor AI. All rights reserved. A{" "}
-            <a
-              href="https://topofferacademy.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[oklch(0.488_0.243_264.376)] hover:underline font-medium"
-            >
-              Top Offer Academy
-            </a>{" "}
-            product.
+            &copy; {new Date().getFullYear()} SpotRole AI. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Sponsor data sourced from GOV.UK Register of Licensed Sponsors
-          </p>
+          <div className="flex items-center gap-4">
+            {["Privacy Policy", "Terms of Service", "Contact"].map((link) => (
+              <button key={link} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                {link}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
