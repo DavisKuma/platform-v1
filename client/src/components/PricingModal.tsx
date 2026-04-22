@@ -1,5 +1,5 @@
 /**
- * PricingModal — Custom Plan pricing display
+ * PricingModal — Full Access pricing for SpotRole AI
  * Design: Warm Modernism — warm card, indigo CTA, emerald checkmarks
  */
 import { useState } from "react";
@@ -22,11 +22,11 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
   };
 
   const features = [
-    { icon: Users, label: "Unlimited hiring manager contacts", description: "Verified emails for every matched company" },
-    { icon: Mail, label: "Unlimited AI-generated emails", description: "Personalised cold outreach at scale" },
-    { icon: TrendingUp, label: "Priority match algorithm", description: "Get matched before free-tier users" },
-    { icon: BarChart3, label: "Outreach analytics dashboard", description: "Track opens, replies, and conversion rates" },
-    { icon: Crown, label: "Early access to new features", description: "Beta features and sponsor data updates" },
+    { icon: Users, label: "Unlimited CV matches", description: "Match your CV against thousands of live roles" },
+    { icon: Mail, label: "Priority AI analysis", description: "Faster processing with enhanced AI models" },
+    { icon: TrendingUp, label: "Advanced match scoring", description: "Detailed fit scores and skill gap analysis" },
+    { icon: BarChart3, label: "Match history & analytics", description: "Track and compare your job matches over time" },
+    { icon: Crown, label: "Early access to new features", description: "Beta features and data source updates" },
     { icon: Star, label: "Dedicated support", description: "Priority email support within 24 hours" },
   ];
 
@@ -41,9 +41,9 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
               </div>
               <div>
                 <DialogTitle className="font-display font-bold text-xl text-foreground">
-                  Custom Plan
+                  Full Access Plan
                 </DialogTitle>
-                <p className="text-sm text-muted-foreground">Unlock the full power of MicroSponsor AI</p>
+                <p className="text-sm text-muted-foreground">Unlock the full power of SpotRole AI</p>
               </div>
             </div>
           </DialogHeader>
@@ -83,17 +83,15 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
             transition={{ duration: 0.3 }}
             className="text-center mb-8"
           >
-            <div className="flex items-baseline justify-center gap-1">
-              <span className="font-display font-extrabold text-5xl text-foreground">
-                £{billingCycle === "monthly" ? "29" : "199"}
+            <div className="flex items-end justify-center gap-1">
+              <span className="text-5xl font-display font-bold text-foreground">
+                {billingCycle === "monthly" ? "£19" : "£12"}
               </span>
-              <span className="text-lg text-muted-foreground font-medium">
-                /{billingCycle === "monthly" ? "mo" : "year"}
-              </span>
+              <span className="text-muted-foreground mb-2">/month</span>
             </div>
             {billingCycle === "yearly" && (
-              <p className="text-sm text-[oklch(0.596_0.145_163.225)] font-medium mt-2">
-                That's just £16.58/mo — save £149/year
+              <p className="text-sm text-[oklch(0.696_0.17_162.48)] font-medium mt-1">
+                Billed annually — save £84/year
               </p>
             )}
           </motion.div>
@@ -103,9 +101,9 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
             {features.map((feature, i) => (
               <motion.div
                 key={feature.label}
-                initial={{ opacity: 0, x: -12 }}
+                initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.06 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
                 className="flex items-start gap-3"
               >
                 <div className="w-8 h-8 rounded-lg bg-[oklch(0.696_0.17_162.48/0.1)] flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -113,7 +111,7 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">{feature.label}</p>
-                  <p className="text-xs text-muted-foreground">{feature.description}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{feature.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -122,17 +120,13 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
           {/* CTA */}
           <Button
             onClick={handleActivate}
-            className="w-full py-6 rounded-xl font-display font-bold text-base bg-[oklch(0.488_0.243_264.376)] hover:bg-[oklch(0.441_0.243_264.376)] text-white shadow-lg shadow-[oklch(0.488_0.243_264.376/0.3)] hover:shadow-xl hover:shadow-[oklch(0.488_0.243_264.376/0.4)] transition-all duration-300"
+            className="w-full bg-[oklch(0.488_0.243_264.376)] hover:bg-[oklch(0.441_0.243_264.376)] text-white rounded-xl font-display font-bold text-base py-6 shadow-lg shadow-[oklch(0.488_0.243_264.376/0.3)] hover:shadow-xl hover:shadow-[oklch(0.488_0.243_264.376/0.4)] transition-all duration-300"
           >
-            <span className="flex items-center gap-2">
-              <Zap className="w-5 h-5" />
-              Start Custom Plan — £{billingCycle === "monthly" ? "29" : "199"}/{billingCycle === "monthly" ? "mo" : "year"}
-            </span>
+            <Zap className="w-5 h-5 mr-2" />
+            Get Full Access
           </Button>
-
-          {/* Trust */}
-          <p className="text-xs text-muted-foreground text-center mt-4">
-            Cancel anytime · 7-day money-back guarantee · Secure payment via Stripe
+          <p className="text-center text-xs text-muted-foreground mt-3">
+            Cancel anytime. No hidden fees.
           </p>
         </div>
       </DialogContent>
