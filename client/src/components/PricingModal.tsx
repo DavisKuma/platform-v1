@@ -1,11 +1,11 @@
 /**
- * PricingModal — Full Access pricing for SpotRole AI
- * Design: Warm Modernism — warm card, indigo CTA, emerald checkmarks
+ * PricingModal — Get Full Access for SpotRole AI
+ * Two options: Book a call with Davis or subscribe for daily email job updates
  */
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Check, Zap, Crown, TrendingUp, Mail, Users, BarChart3, Star } from "lucide-react";
+import { Calendar, Mail, Check, Zap, ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -15,24 +15,44 @@ interface PricingModalProps {
 }
 
 export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
-  const handleActivate = () => {
-    toast.info("Payments coming soon! Stay tuned.");
+  const handleBookCall = () => {
+    window.open("https://calendly.com/davis-kuma1/quick", "_blank");
   };
 
-  const features = [
-    { icon: Users, label: "Unlimited CV matches", description: "Match your CV against thousands of live roles" },
-    { icon: Mail, label: "Priority AI analysis", description: "Faster processing with enhanced AI models" },
-    { icon: TrendingUp, label: "Advanced match scoring", description: "Detailed fit scores and skill gap analysis" },
-    { icon: BarChart3, label: "Match history & analytics", description: "Track and compare your job matches over time" },
-    { icon: Crown, label: "Early access to new features", description: "Beta features and data source updates" },
-    { icon: Star, label: "Dedicated support", description: "Priority email support within 24 hours" },
+  const handleSubscribe = async () => {
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    setSubscribing(true);
+    // Simulate subscription — replace with real API call when ready
+    await new Promise((res) => setTimeout(res, 1200));
+    setSubscribing(false);
+    setSubscribed(true);
+    toast.success("You're subscribed! Daily job matches will land in your inbox.");
+  };
+
+  const callBenefits = [
+    "Personalised walkthrough of your CV matches",
+    "Tailored job search strategy from Davis",
+    "Discuss your target roles and companies",
+    "30-minute focused career session",
+  ];
+
+  const emailBenefits = [
+    "Top 5 job matches delivered every morning",
+    "AI-ranked by relevance to your CV",
+    "Live roles from Adzuna & Reed",
+    "Unsubscribe anytime — no spam",
   ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-card border-border rounded-2xl p-0">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border rounded-2xl p-0">
         <div className="p-6 sm:p-8">
           <DialogHeader className="mb-6">
             <div className="flex items-center gap-3 mb-2">
@@ -41,93 +61,106 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
               </div>
               <div>
                 <DialogTitle className="font-display font-bold text-xl text-foreground">
-                  Full Access Plan
+                  Get Full Access
                 </DialogTitle>
-                <p className="text-sm text-muted-foreground">Unlock the full power of SpotRole AI</p>
+                <p className="text-sm text-muted-foreground">Choose how you want to level up your job search</p>
               </div>
             </div>
           </DialogHeader>
 
-          {/* Billing toggle */}
-          <div className="flex items-center justify-center gap-1 p-1 bg-muted rounded-xl mb-8">
-            <button
-              onClick={() => setBillingCycle("monthly")}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                billingCycle === "monthly"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+          <div className="grid sm:grid-cols-2 gap-5">
+            {/* ── Option 1: Book a Call ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+              className="relative rounded-2xl border-2 border-[oklch(0.488_0.243_264.376)] bg-[oklch(0.488_0.243_264.376/0.04)] p-6 flex flex-col"
             >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle("yearly")}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 relative ${
-                billingCycle === "yearly"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Yearly
-              <span className="absolute -top-2 -right-1 px-1.5 py-0.5 bg-[oklch(0.696_0.17_162.48)] text-white text-[10px] font-bold rounded-full">
-                -36%
-              </span>
-            </button>
-          </div>
-
-          {/* Price */}
-          <motion.div
-            key={billingCycle}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="text-center mb-8"
-          >
-            <div className="flex items-end justify-center gap-1">
-              <span className="text-5xl font-display font-bold text-foreground">
-                {billingCycle === "monthly" ? "£19" : "£12"}
-              </span>
-              <span className="text-muted-foreground mb-2">/month</span>
-            </div>
-            {billingCycle === "yearly" && (
-              <p className="text-sm text-[oklch(0.696_0.17_162.48)] font-medium mt-1">
-                Billed annually — save £84/year
+              <div className="absolute -top-3 left-5">
+                <span className="px-3 py-1 bg-[oklch(0.488_0.243_264.376)] text-white text-xs font-bold rounded-full shadow">
+                  Recommended
+                </span>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-[oklch(0.488_0.243_264.376/0.12)] flex items-center justify-center mb-4 mt-2">
+                <Calendar className="w-5 h-5 text-[oklch(0.488_0.243_264.376)]" />
+              </div>
+              <h3 className="font-display font-bold text-lg text-foreground mb-1">Book a Call with Me</h3>
+              <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+                Get a personalised 30-minute session with Davis to supercharge your job search strategy.
               </p>
-            )}
-          </motion.div>
-
-          {/* Features */}
-          <div className="space-y-4 mb-8">
-            {features.map((feature, i) => (
-              <motion.div
-                key={feature.label}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-                className="flex items-start gap-3"
+              <ul className="space-y-2.5 mb-6 flex-1">
+                {callBenefits.map((b) => (
+                  <li key={b} className="flex items-start gap-2 text-sm text-foreground">
+                    <Check className="w-4 h-4 text-[oklch(0.488_0.243_264.376)] flex-shrink-0 mt-0.5" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                onClick={handleBookCall}
+                className="w-full bg-[oklch(0.488_0.243_264.376)] hover:bg-[oklch(0.441_0.243_264.376)] text-white rounded-xl font-display font-bold text-sm py-5 shadow-lg shadow-[oklch(0.488_0.243_264.376/0.25)] transition-all duration-300"
               >
-                <div className="w-8 h-8 rounded-lg bg-[oklch(0.696_0.17_162.48/0.1)] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-4 h-4 text-[oklch(0.596_0.145_163.225)]" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{feature.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{feature.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                <Calendar className="w-4 h-4 mr-2" />
+                Book a Free Call
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+              <p className="text-center text-xs text-muted-foreground mt-2">Free · 30 minutes · via Calendly</p>
+            </motion.div>
 
-          {/* CTA */}
-          <Button
-            onClick={handleActivate}
-            className="w-full bg-[oklch(0.488_0.243_264.376)] hover:bg-[oklch(0.441_0.243_264.376)] text-white rounded-xl font-display font-bold text-base py-6 shadow-lg shadow-[oklch(0.488_0.243_264.376/0.3)] hover:shadow-xl hover:shadow-[oklch(0.488_0.243_264.376/0.4)] transition-all duration-300"
-          >
-            <Zap className="w-5 h-5 mr-2" />
-            Get Full Access
-          </Button>
-          <p className="text-center text-xs text-muted-foreground mt-3">
-            Cancel anytime. No hidden fees.
-          </p>
+            {/* ── Option 2: Daily Email Updates ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.08 }}
+              className="rounded-2xl border border-border bg-card p-6 flex flex-col"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[oklch(0.696_0.17_162.48/0.12)] flex items-center justify-center mb-4">
+                <Mail className="w-5 h-5 text-[oklch(0.596_0.145_163.225)]" />
+              </div>
+              <h3 className="font-display font-bold text-lg text-foreground mb-1">Daily Job Updates</h3>
+              <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+                Subscribe and receive your top AI-matched job opportunities every morning, tailored to your CV.
+              </p>
+              <ul className="space-y-2.5 mb-6 flex-1">
+                {emailBenefits.map((b) => (
+                  <li key={b} className="flex items-start gap-2 text-sm text-foreground">
+                    <Check className="w-4 h-4 text-[oklch(0.596_0.145_163.225)] flex-shrink-0 mt-0.5" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+              {subscribed ? (
+                <div className="w-full rounded-xl bg-[oklch(0.696_0.17_162.48/0.1)] border border-[oklch(0.696_0.17_162.48/0.3)] p-4 text-center">
+                  <Sparkles className="w-5 h-5 text-[oklch(0.596_0.145_163.225)] mx-auto mb-1" />
+                  <p className="text-sm font-semibold text-[oklch(0.596_0.145_163.225)]">You're subscribed!</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Check your inbox tomorrow morning.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[oklch(0.696_0.17_162.48/0.4)] transition"
+                    onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
+                  />
+                  <Button
+                    onClick={handleSubscribe}
+                    disabled={subscribing}
+                    className="w-full bg-[oklch(0.596_0.145_163.225)] hover:bg-[oklch(0.546_0.145_163.225)] text-white rounded-xl font-display font-bold text-sm py-5 transition-all duration-300"
+                  >
+                    {subscribing ? (
+                      <><span className="animate-spin mr-2">⟳</span> Subscribing...</>
+                    ) : (
+                      <><Mail className="w-4 h-4 mr-2" /> Subscribe for Free</>
+                    )}
+                  </Button>
+                  <p className="text-center text-xs text-muted-foreground">Free · No spam · Unsubscribe anytime</p>
+                </div>
+              )}
+            </motion.div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
