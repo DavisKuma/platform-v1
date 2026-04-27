@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import StatsSection from "@/components/StatsSection";
 import Footer from "@/components/Footer";
 import PricingModal from "@/components/PricingModal";
+import HiringManagerModal from "@/components/HiringManagerModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   Upload, FileText, CheckCircle2, Sparkles, ArrowRight,
   ExternalLink, MapPin, Building2, Loader2, AlertCircle,
-  ChevronDown, ChevronUp, Brain, Target, Zap, Search,
+  ChevronDown, ChevronUp, Brain, Target, Users,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -81,6 +82,8 @@ export default function Home() {
   const [showAllMatches, setShowAllMatches] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [pricingModalOpen, setPricingModalOpen] = useState(false);
+  const [hiringModalOpen, setHiringModalOpen] = useState(false);
+  const [hiringModalJob, setHiringModalJob] = useState<{ company: string; jobTitle: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadSectionRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -544,7 +547,7 @@ export default function Home() {
                                   Salary: {match.salary}
                                 </p>
                               )}
-                              <div className="flex items-center gap-2 mt-3">
+                              <div className="flex items-center gap-2 mt-3 flex-wrap">
                                 {match.jobLink && (
                                   <Button
                                     variant="outline"
@@ -556,6 +559,18 @@ export default function Home() {
                                     View Job
                                   </Button>
                                 )}
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="rounded-lg text-xs h-8 border-[oklch(0.488_0.243_264.376/0.3)] text-[oklch(0.488_0.243_264.376)] hover:bg-[oklch(0.488_0.243_264.376/0.05)]"
+                                  onClick={() => {
+                                    setHiringModalJob({ company: match.company, jobTitle: match.jobTitle });
+                                    setHiringModalOpen(true);
+                                  }}
+                                >
+                                  <Users className="w-3.5 h-3.5 mr-1" />
+                                  Find Hiring Manager
+                                </Button>
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -719,6 +734,13 @@ export default function Home() {
       <PricingModal
         isOpen={pricingModalOpen}
         onClose={() => setPricingModalOpen(false)}
+      />
+
+      <HiringManagerModal
+        isOpen={hiringModalOpen}
+        onClose={() => setHiringModalOpen(false)}
+        company={hiringModalJob?.company || ""}
+        jobTitle={hiringModalJob?.jobTitle || ""}
       />
     </div>
   );
