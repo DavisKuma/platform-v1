@@ -14,19 +14,6 @@ async function request<T>(path: string, opts?: RequestInit): Promise<T> {
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
-export interface HiringManagerResult {
-  full_name: string;
-  title: string;
-  linkedin_url: string;
-  ai_score: number;
-  reason: string;
-  is_verified: boolean;
-}
-
-interface HiringManagerResponse {
-  people: HiringManagerResult[];
-}
-
 interface TaskStatus {
   status: "processing" | "completed" | "failed";
   progress: string;
@@ -115,10 +102,4 @@ export const api = {
 
     throw new Error("Task timed out. Please try again.");
   },
-
-  findHiringManagers: (company: string, jobTitle: string) =>
-    request<HiringManagerResponse>("/hiring-managers", {
-      method: "POST",
-      body: JSON.stringify({ company, job_title: jobTitle }),
-    }),
 };

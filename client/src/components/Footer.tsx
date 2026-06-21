@@ -1,5 +1,5 @@
 /**
- * Footer — SpotRole AI footer
+ * Footer — TOA AI footer
  * Design: Warm Modernism — warm card, indigo accents
  */
 import { Target } from "lucide-react";
@@ -58,7 +58,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} SpotRole AI. All rights reserved.
+            &copy; {new Date().getFullYear()} TOA AI. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             {["Privacy Policy", "Terms of Service", "Contact"].map((link) => (

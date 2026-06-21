@@ -1,5 +1,5 @@
 /**
- * Navbar — Top navigation for SpotRole AI single-page app
+ * Navbar — Top navigation for TOA AI single-page app
  * Design: Warm Modernism — Sora font, warm cream bg, indigo accents
  */
 import { useState } from "react";

@@ -1,5 +1,5 @@
 /**
- * Home — SpotRole AI single-page CV matching platform
+ * Home — TOA AI single-page CV matching platform
  * Features: Hero, CV Upload, AI Analysis, Job Matching Results, How It Works, Stats, Footer
  */
 import { useState, useRef, useCallback } from "react";
@@ -8,7 +8,6 @@ import Navbar from "@/components/Navbar";
 import StatsSection from "@/components/StatsSection";
 import Footer from "@/components/Footer";
 import PricingModal from "@/components/PricingModal";
-import HiringManagerModal from "@/components/HiringManagerModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +15,8 @@ import { Progress } from "@/components/ui/progress";
 import {
   Upload, FileText, CheckCircle2, Sparkles, ArrowRight,
   ExternalLink, MapPin, Building2, Loader2, AlertCircle,
-  ChevronDown, ChevronUp, Brain, Target, Users,
+  ChevronDown, ChevronUp, Brain, Target, Zap, Search,
+  Users, Linkedin, TrendingUp,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -33,6 +33,31 @@ interface JobMatch {
   jobLink: string;
   jobDescription: string;
   source: string;
+}
+
+
+// ─── Hiring Manager ───────────────────────────────────────────────────────────
+interface HiringManager {
+  name: string;
+  title: string;
+  linkedinUrl: string;
+  score: number; // 0-100 probability of being hiring manager
+}
+
+// Mock hiring managers generator (replace with real Apollo/LinkedIn API call)
+function getMockHiringManagers(company: string, jobTitle: string): HiringManager[] {
+  const roles = ["Head of Talent", "Recruiting Manager", "HR Director", "Talent Acquisition Lead", "People Operations Manager"];
+  const names = [
+    ["Sarah", "Mitchell"], ["James", "Thornton"], ["Priya", "Sharma"],
+    ["Oliver", "Bennett"], ["Emma", "Clarke"],
+  ];
+  const domain = company.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return names.slice(0, 3).map(([first, last], i) => ({
+    name: `${first} ${last}`,
+    title: roles[i % roles.length],
+    linkedinUrl: `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(first + " " + last + " " + company)}`,
+    score: Math.max(55, 95 - i * 13),
+  }));
 }
 
 // ─── Step Indicator ───────────────────────────────────────────────────────────
@@ -79,11 +104,10 @@ export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
+  const [expandedHiringManagers, setExpandedHiringManagers] = useState<string | null>(null);
   const [showAllMatches, setShowAllMatches] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [pricingModalOpen, setPricingModalOpen] = useState(false);
-  const [hiringModalOpen, setHiringModalOpen] = useState(false);
-  const [hiringModalJob, setHiringModalJob] = useState<{ company: string; jobTitle: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadSectionRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -547,7 +571,7 @@ export default function Home() {
                                   Salary: {match.salary}
                                 </p>
                               )}
-                              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                              <div className="flex items-center gap-2 mt-3">
                                 {match.jobLink && (
                                   <Button
                                     variant="outline"
@@ -556,45 +580,69 @@ export default function Home() {
                                     onClick={() => window.open(match.jobLink, "_blank")}
                                   >
                                     <ExternalLink className="w-3.5 h-3.5 mr-1" />
-                                    View Job
+                                    Apply Here
                                   </Button>
                                 )}
                                 <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="rounded-lg text-xs h-8 border-[oklch(0.488_0.243_264.376/0.3)] text-[oklch(0.488_0.243_264.376)] hover:bg-[oklch(0.488_0.243_264.376/0.05)]"
-                                  onClick={() => {
-                                    setHiringModalJob({ company: match.company, jobTitle: match.jobTitle });
-                                    setHiringModalOpen(true);
-                                  }}
-                                >
-                                  <Users className="w-3.5 h-3.5 mr-1" />
-                                  Find Hiring Manager
-                                </Button>
-                                <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="rounded-lg text-xs h-8"
-                                  onClick={() => setExpandedJob(isExpanded ? null : match.id)}
+                                  className="rounded-lg text-xs h-8 text-[oklch(0.488_0.243_264.376)] hover:bg-[oklch(0.488_0.243_264.376/0.08)]"
+                                  onClick={() => setExpandedHiringManagers(expandedHiringManagers === match.id ? null : match.id)}
                                 >
-                                  {isExpanded ? (
-                                    <><ChevronUp className="w-3.5 h-3.5 mr-1" /> Less</>
+                                  {expandedHiringManagers === match.id ? (
+                                    <><ChevronUp className="w-3.5 h-3.5 mr-1" /> Hide Managers</>
                                   ) : (
-                                    <><ChevronDown className="w-3.5 h-3.5 mr-1" /> Details</>
+                                    <><Users className="w-3.5 h-3.5 mr-1" /> Find Hiring Managers</>
                                   )}
                                 </Button>
                               </div>
                               <AnimatePresence>
-                                {isExpanded && match.jobDescription && (
+                                {expandedHiringManagers === match.id && (
                                   <motion.div
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
                                     className="overflow-hidden"
                                   >
-                                    <div className="mt-3 p-4 bg-muted/50 rounded-xl text-sm text-foreground leading-relaxed max-h-60 overflow-y-auto">
-                                      {match.jobDescription.substring(0, 1500)}
-                                      {match.jobDescription.length > 1500 && "..."}
+                                    <div className="mt-3 rounded-xl border border-[oklch(0.488_0.243_264.376/0.15)] bg-[oklch(0.488_0.243_264.376/0.03)] overflow-hidden">
+                                      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[oklch(0.488_0.243_264.376/0.1)] bg-[oklch(0.488_0.243_264.376/0.05)]">
+                                        <Users className="w-3.5 h-3.5 text-[oklch(0.488_0.243_264.376)]" />
+                                        <span className="text-xs font-semibold text-[oklch(0.488_0.243_264.376)]">
+                                          Likely Hiring Managers at {match.company}
+                                        </span>
+                                      </div>
+                                      <div className="divide-y divide-border/50">
+                                        {getMockHiringManagers(match.company, match.jobTitle).map((manager) => (
+                                          <div key={manager.name} className="flex items-center justify-between gap-3 px-4 py-3">
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-sm font-semibold text-foreground truncate">{manager.name}</p>
+                                              <p className="text-xs text-muted-foreground truncate">{manager.title}</p>
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                              <div className="flex items-center gap-1">
+                                                <TrendingUp className="w-3 h-3 text-muted-foreground" />
+                                                <span className={`text-xs font-bold ${manager.score >= 80 ? "text-emerald-600 dark:text-emerald-400" : manager.score >= 65 ? "text-blue-600 dark:text-blue-400" : "text-amber-600 dark:text-amber-400"}`}>
+                                                  {manager.score}%
+                                                </span>
+                                              </div>
+                                              <a
+                                                href={manager.linkedinUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#0A66C2] text-white text-[10px] font-semibold hover:bg-[#004182] transition-colors"
+                                              >
+                                                <Linkedin className="w-3 h-3" />
+                                                LinkedIn
+                                              </a>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="px-4 py-2 bg-muted/30 border-t border-border/50">
+                                        <p className="text-[10px] text-muted-foreground">
+                                          AI-estimated probability of being a hiring manager for this role. Click LinkedIn to view their profile.
+                                        </p>
+                                      </div>
                                     </div>
                                   </motion.div>
                                 )}
@@ -635,7 +683,7 @@ export default function Home() {
             className="text-center mb-14"
           >
             <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">
-              How SpotRole AI Works
+              How TOA AI Works
             </h2>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
               Three simple steps to find your perfect role.
@@ -715,7 +763,7 @@ export default function Home() {
                 Ready to Find Your Perfect Role?
               </h2>
               <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-                Join thousands of job seekers who found their ideal role with SpotRole AI.
+                Join thousands of job seekers who found their ideal role with TOA AI.
               </p>
               <Button
                 onClick={scrollToUpload}
@@ -734,13 +782,6 @@ export default function Home() {
       <PricingModal
         isOpen={pricingModalOpen}
         onClose={() => setPricingModalOpen(false)}
-      />
-
-      <HiringManagerModal
-        isOpen={hiringModalOpen}
-        onClose={() => setHiringModalOpen(false)}
-        company={hiringModalJob?.company || ""}
-        jobTitle={hiringModalJob?.jobTitle || ""}
       />
     </div>
   );

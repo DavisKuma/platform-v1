@@ -1,5 +1,5 @@
 /**
- * StatsSection — Key platform statistics for SpotRole AI
+ * StatsSection — Key platform statistics for TOA AI
  * Design: Warm Modernism — stat cards with accent icons
  */
 import { motion } from "framer-motion";
