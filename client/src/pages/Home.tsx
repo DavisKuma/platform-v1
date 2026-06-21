@@ -1,5 +1,5 @@
 /**
- * Home — SpotRole AI single-page CV matching platform
+ * Home — TOA AI single-page CV matching platform
  * Features: Hero, CV Upload, AI Analysis, Job Matching Results, How It Works, Stats, Footer
  */
 import { useState, useRef, useCallback } from "react";
@@ -683,7 +683,7 @@ export default function Home() {
             className="text-center mb-14"
           >
             <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">
-              How SpotRole AI Works
+              How TOA AI Works
             </h2>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
               Three simple steps to find your perfect role.
@@ -763,7 +763,7 @@ export default function Home() {
                 Ready to Find Your Perfect Role?
               </h2>
               <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-                Join thousands of job seekers who found their ideal role with SpotRole AI.
+                Join thousands of job seekers who found their ideal role with TOA AI.
               </p>
               <Button
                 onClick={scrollToUpload}

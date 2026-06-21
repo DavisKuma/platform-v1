@@ -1,5 +1,5 @@
 /**
- * PricingModal — Get Full Access for SpotRole AI
+ * PricingModal — Get Full Access for TOA AI
  * Two options: Book a call with Davis or subscribe for daily email job updates
  */
 import { useState } from "react";
