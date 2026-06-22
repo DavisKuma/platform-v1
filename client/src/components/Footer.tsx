@@ -16,7 +16,7 @@ export default function Footer() {
                 <Target className="w-4.5 h-4.5 text-white" />
               </div>
               <span className="font-display font-bold text-base text-foreground">
-                Spot<span className="text-[oklch(0.488_0.243_264.376)]">Role</span> AI
+                TOA AI
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">

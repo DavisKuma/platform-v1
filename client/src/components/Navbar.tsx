@@ -25,7 +25,7 @@ export default function Navbar({ onOpenPricing, onScrollToUpload }: NavbarProps)
             <Target className="w-5 h-5 text-white" />
           </div>
           <span className="font-display font-bold text-lg tracking-tight text-foreground">
-            Spot<span className="text-[oklch(0.488_0.243_264.376)]">Role</span> AI
+            TOA AI
           </span>
         </div>
 
